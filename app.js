@@ -3,6 +3,7 @@ import connectDB from "./src/config/db.js";
 import userModel from "./src/models/userModel.js";
 import cookieParser from "cookie-parser";
 import bcrypt, { hash } from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 connectDB();
 const app = express();
@@ -37,6 +38,7 @@ app.post("/register", async (req, res) => {
         email,
         password: hash,
       });
+     let token = jwt.sign({ email: email, userid: user._id }, "secretKey");
     });
   });
 });
