@@ -48,10 +48,14 @@
                         <p>
                             <%= post.content %>
                         </p>
-
+                        <small class="mt-4 mb-1 inline-block">
+                            <%= post.likes.length %> likes
+                        </small>
                         <div class="btns flex mt-5 gap-3">
-                            <a class="text-blue-400" href="">Like</a>
-                            <a class="text-zinc-600" href="">Edit</a>
+                            <a class="text-blue-400" href="/like/<%= post._id %>">
+                                <%= post.likes.indexOf(user._id) === -1 ? "like" : "unlike" %>
+                            </a>
+                            <a class="text-zinc-600" href="/edit/<%= post._id %>">Edit</a>
                         </div>
                     </div>
                     <% }) %>
