@@ -6,9 +6,9 @@ const userSchema = mongoose.Schema({
   age: Number,
   email: String,
   password: String,
-  post: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
+  post: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 });
 
-const userModel = new mongoose.model("user", userSchema);
+const userModel =  mongoose.model("User", userSchema);
 
 export default userModel;

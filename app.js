@@ -70,7 +70,7 @@ app.post("/login", async (req, res) => {
     let token = jwt.sign({ email, userid: user._id }, "secretKey");
     //setting cookie
     res.cookie("token", token);
-    res.status(200).json({ message: "Login successful" });
+    res.redirect("/profile");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -82,18 +82,36 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-app.get("/profile", isLoggedIn, (req, res) => {
+app.get("/profile", isLoggedIn, async (req, res) => {
   console.log(req.user);
-  res.send("profile page");
+  let user = await userModel.findOne({ email: req.user.email });
+  console.log(user);
+  res.render("profile", { user });
 });
 
 // creating middleware for protecting the routes
+
+app.post("/post", isLoggedIn, async (req, res) => {
+  const { content } = req.body;
+  let user = await userModel.findOne({ email: req.user.email });
+  // here we are creating a post and the post know that who is user
+  let userPost = await postModel.create({
+    user: user._id,
+    content,
+  });
+
+  // now we will push this post to user
+
+  user.post.push(userPost._id);
+  await user.save();
+  res.redirect("/profile");
+});
 
 function isLoggedIn(req, res, next) {
   const token = req.cookies.token;
 
   if (!token) {
-    return res.status(401).send("Login first");
+    return res.redirect("/login");
   }
 
   try {

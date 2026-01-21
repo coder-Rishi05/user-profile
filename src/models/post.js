@@ -3,16 +3,16 @@ import mongoose from "mongoose";
 const postSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
   date: {
     type: Date,
     default: Date.now,
   },
   content: String,
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
-const postModel = new mongoose.model("post", postSchema);
+const postModel =  mongoose.model("Post", postSchema);
 
 export default postModel;
