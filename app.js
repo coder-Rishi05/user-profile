@@ -5,6 +5,7 @@ import postModel from "./src/models/post.js";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import upload from "./utils/multerConfig.js";
 
 connectDB();
 const app = express();
