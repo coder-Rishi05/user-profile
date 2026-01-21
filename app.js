@@ -3,7 +3,7 @@ import connectDB from "./src/config/db.js";
 import userModel from "./src/models/userModel.js";
 import postModel from "./src/models/post.js";
 import cookieParser from "cookie-parser";
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 connectDB();
@@ -67,7 +67,9 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
+    let token = jwt.sign({ email, userid: user._id }, "secretKey");
+    //setting cookie
+    res.cookie("token", token);
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.error(error);
@@ -76,9 +78,32 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.cookie("token", "");
+  res.clearCookie("token");
   res.redirect("/");
 });
+
+app.get("/profile", isLoggedIn, (req, res) => {
+  console.log(req.user);
+  res.send("profile page");
+});
+
+// creating middleware for protecting the routes
+
+function isLoggedIn(req, res, next) {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).send("Login first");
+  }
+
+  try {
+    const data = jwt.verify(token, "secretKey");
+    req.user = data;
+    next();
+  } catch (err) {
+    return res.status(401).send("Invalid token");
+  }
+}
 
 app.listen(3000, () => {
   console.log("serever running at : 3000");
