@@ -1,23 +1,28 @@
 import multer from "multer";
 import path from "path";
 import crypto from "crypto";
-// diskstorage
+import { fileURLToPath } from "url";
+
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/public/images/uploads");
+    cb(null, path.join(__dirname, "../public/images/uploads"));
   },
   filename: function (req, file, cb) {
-    // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     crypto.randomBytes(12, function (err, name) {
-      const fn = name.toString("hex") + path.extname(file.originalname);
-      cb(null, file.fieldname + "-" + uniqueSuffix);
+      if (err) return cb(err);
+
+      const filename =
+        name.toString("hex") + path.extname(file.originalname);
+
+      cb(null, filename);
     });
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-// export upload variable
-
-export default upload
+export default upload;
